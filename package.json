@@ -1,0 +1,27 @@
+{
+    "name": "solvix-discord-bot",
+    "version": "1.0.0",
+    "description": "Advanced Discord bot with slash commands, prefix commands, and mention commands",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "dev": "nodemon index.js",
+        "docs": "node docs.js"
+    },
+    "keywords": [
+        "discord",
+        "bot",
+        "slash-commands",
+        "discord.js"
+    ],
+    "author": "Your Name",
+    "license": "MIT",
+    "dependencies": {
+        "discord.js": "^14.21.0",
+        "dotenv": "^17.0.1",
+        "mongodb": "^6.17.0"
+    },
+    "devDependencies": {
+        "nodemon": "^3.1.10"
+    }
+}
