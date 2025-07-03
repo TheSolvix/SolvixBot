@@ -5,8 +5,7 @@
     "main": "index.js",
     "scripts": {
         "start": "node index.js",
-        "dev": "nodemon index.js",
-        "docs": "node docs.js"
+        "dev": "nodemon index.js"
     },
     "keywords": [
         "discord",
@@ -14,7 +13,7 @@
         "slash-commands",
         "discord.js"
     ],
-    "author": "Your Name",
+    "author": "Team Solvix",
     "license": "MIT",
     "dependencies": {
         "discord.js": "^14.21.0",
