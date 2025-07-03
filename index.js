@@ -187,17 +187,13 @@ client.on(Events.MessageCreate, async (message) => {
     if (message.author.bot || message.system) return;
     if (!message.guild && !config.allowDMs) return;
     
-let prefix = null;
-let args = [];
-
-// Check for custom guild prefix first
-const customPrefix = client.config.guildPrefixes[message.guild?.id];
-const prefixToUse = customPrefix || config.prefix;
+    let prefix = null;
+    let args = [];
     
     try {
-        if (message.content.startsWith(prefixToUse)) {
-            prefix = prefixToUse;
-            args = message.content.slice(prefixToUse.length).trim().split(/ +/);
+        if (message.content.startsWith(config.prefix)) {
+            prefix = config.prefix;
+            args = message.content.slice(config.prefix.length).trim().split(/ +/);
         }
         
         if (!prefix && config.mention && message.mentions.has(client.user)) {

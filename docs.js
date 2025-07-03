@@ -236,7 +236,6 @@ const config = {
         'Thumbs.db',
         'docs.js',
         'dummy.js',
-        'autoexecute',
         'commands/normal/BotInfo/botinfo.js',
         'commands/slash/BotInfo/botinfo.js',
         'commands/normal/BotInfo/uptime.js',
