@@ -8,8 +8,8 @@ module.exports = {
     botVersion: '1.0.0',
     
     // Import colors and emojis
-    ...colors,
-    emojis: emojis,
+    ...require('./variables/colors.js'),
+    emojis: require('./variables/emojis.js'),
     
     // Timing (in milliseconds)
     statusRotationInterval: 30000, // 30 seconds

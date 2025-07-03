@@ -4,6 +4,7 @@ const path = require('path');
 const config = require('./config.js');
 const variables = require('./variables.js');
 const { statuses } = require('./status.js');
+const database = require('./utils/database.js');
 
 // Enhanced client with additional options
 const client = new Client({
@@ -169,6 +170,13 @@ const rotateStatus = () => {
 client.once(Events.ClientReady, async (readyClient) => {
     console.log(`✅ Logged in as ${readyClient.user.tag}`);
     client.config = config;
+    
+    // Connect to MongoDB
+    const dbConnected = await database.connect();
+    if (!dbConnected) {
+        console.warn('⚠️  Running without database - prefix commands will use default prefix only');
+    }
+    
     loadHandlers();
     await refreshSlashCommands();
     
@@ -191,9 +199,22 @@ client.on(Events.MessageCreate, async (message) => {
     let args = [];
     
     try {
-        if (message.content.startsWith(config.prefix)) {
-            prefix = config.prefix;
-            args = message.content.slice(config.prefix.length).trim().split(/ +/);
+        // Get guild-specific prefix or use default
+        const guildPrefix = message.guild ? await database.getGuildPrefix(message.guild.id) : null;
+        const currentPrefix = guildPrefix || config.prefix;
+        
+        // Check for prefix match (case-insensitive for default prefix, exact for custom)
+        if (message.content.startsWith(currentPrefix)) {
+            prefix = currentPrefix;
+            args = message.content.slice(currentPrefix.length).trim().split(/ +/);
+        }
+        // Check for default prefix with case-insensitive matching (when no custom prefix or when custom matches default)
+        else if (message.content.toLowerCase().startsWith(config.prefix.toLowerCase())) {
+            // Only allow case-insensitive default prefix if no custom prefix is set OR custom prefix equals default
+            if (!guildPrefix || guildPrefix.toLowerCase() === config.prefix.toLowerCase()) {
+                prefix = config.prefix;
+                args = message.content.slice(config.prefix.length).trim().split(/ +/);
+            }
         }
         
         if (!prefix && config.mention && message.mentions.has(client.user)) {
@@ -208,7 +229,7 @@ client.on(Events.MessageCreate, async (message) => {
         
         const commandName = args.shift().toLowerCase();
         const command = client.normalCommands.get(commandName) || 
-                        client.normalCommands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+                        client.normalCommands.find(cmd => cmd.aliases && cmd.aliases.map(alias => alias.toLowerCase()).includes(commandName));
         
         if (!command) return;
         
@@ -333,8 +354,9 @@ client.on(Events.Debug, info => {
 });
 
 // Graceful shutdown
-const gracefulShutdown = () => {
+const gracefulShutdown = async () => {
     console.log('Shutting down gracefully...');
+    await database.disconnect();
     client.destroy();
     process.exit(0);
 };
